@@ -3,23 +3,23 @@ import { Button, Intent, FormGroup } from "@blueprintjs/core";
 import Select from '../form_components/Select';
 
 const GOALS = [
-    'Select Your Goal',
+    'Select Goal',
     'Lose Weight', 
     'Maintain Weight', 
     'Gain Weight' ]
 
 const DIET_PREFERENCES = [
-    'Select Your Favourite Diet',
+    'Select Favourite Diet',
     'High Fats',
     'High Carbs' ]    
 
- const MacroNutrients = ({ goal, diet, onChange }) => {
-        return(
+ const MacroNutrients = ({ goal, diet, onChange, calculateMacros, weight }) => {
+    return(
             <div>
                 <p>
                 Macro Nutrients Dosage
                 </p>
-
+            
                 <Select 
                     name={'goal'} 
                     value={goal} 
@@ -33,7 +33,17 @@ const DIET_PREFERENCES = [
                     options={DIET_PREFERENCES} />  
 
                 <FormGroup>
-                    <Button intent={Intent.PRIMARY} text={'Calculate your TDEE'} />
+                    <Button 
+                        intent={Intent.SUCCESS} 
+                        text={'Calculate Macro Nutrients'} 
+                        onClick={() => calculateMacros()} 
+                        disabled={(
+                            weight === '' || 
+                            goal === '' || 
+                            goal === GOALS[0] || 
+                            diet === '' || 
+                            diet === DIET_PREFERENCES[0])}
+                    />
                 </FormGroup>
             </div>
         )   

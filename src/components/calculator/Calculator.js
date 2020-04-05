@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Activity, Pounds, Weight } from '../utils/Enums';
+import { Activity, Pounds, Weight, Protein } from '../utils/Enums';
 import MacroNutrients from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
 
@@ -12,11 +12,13 @@ export default class Calculator extends Component {
             weight: '',
             isPounds: Weight.POUNDS,
             weightInPounds: 0,
-            factors: Activity.LIGHTLY,
-            deficit: 2,
+            activityFactors: Activity.LIGHTLY,
             goal: '',
-            diet: 0, 
-            caloricMaintenance: 0
+            diet: '', 
+            caloricMaintenance: 0,
+            proteinDosage: 0,
+            fatDosage: 0,
+            carbsDosage:0
         };      
     }
 
@@ -26,31 +28,47 @@ export default class Calculator extends Component {
             this.calculateCaloricMaintenance(); console.log(`_onChange : ${JSON.stringify(this.state)}`);
         });
     }
-
-    getChangeHandler = (key) => { 
-        return (value) => this.setState({ [key]: value }, () => { console.log(`getChangeHandler : ${JSON.stringify(this.state)}`); });
-    }
     
-    calculateCaloricMaintenance = () => { console.log(`IS_POUNDS? ${this.state.isPounds === Weight.POUNDS}`);
-        let weightConverted = 0;//WEIGHT (will be returned in pounds) 
+    calculateCaloricMaintenance = () => {
+        let weightConverted = this.state.weight;//WEIGHT (will be returned in pounds) 
+        let weightIsSet = this.state.weight !== '';
 
-        if(this.state.isPounds === Weight.KGS && this.state.weight !== ''){//When WEIGHT provided in KGS
-            
+        if(this.state.isPounds === Weight.KGS && weightIsSet){//When WEIGHT provided in KGS  
             weightConverted = (this.state.weight * Pounds.CONVERTER);
 
-            this.setState({caloricMaintenance: (weightConverted * this.state.factors)}, () => {
+            this.setState({caloricMaintenance: (weightConverted * this.state.activityFactors)}, () => {
                 console.log(`caloricMaintenance(kgs): ${JSON.stringify(this.state)}`);
             });
             
-        } else if(this.state.isPounds === Weight.POUNDS && this.state.weight !== ''){ //When WEIGHT provided in LBS
+        } else if(this.state.isPounds === Weight.POUNDS && weightIsSet){ //When WEIGHT provided in LBS
             weightConverted = this.state.weight;
 
-            this.setState({caloricMaintenance: (this.state.weight * this.state.factors)}, () =>{
+            this.setState({caloricMaintenance: (this.state.weight * this.state.activityFactors)}, () =>{
                 console.log(`caloricMaintenance(lbs): ${JSON.stringify(this.state)}`);
             });
         }  
         //Set correct WEIGHT to Pounds 
-        this.setState({ weightInPounds: weightConverted }, () => { console.log(`weight in pounds: ${this.state.weightInPounds}`) });
+        this.setState({ weightInPounds: weightConverted });
+    }
+
+    calculateProteinIntake = () => { 
+        let proteinIntake = 0;
+        switch(this.state.activityFactors){
+            case Activity.LIGHTLY:
+                proteinIntake = this.state.weightInPounds * Protein.SEDENTARY;
+                this.setState({proteinDosage: proteinIntake}, () => console.log(` lightly: ${JSON.stringify(this.state)}`));
+                break;
+            case Activity.MODERATELY:    
+                proteinIntake = this.state.weightInPounds * Protein.ATHLETE;
+                this.setState({proteinDosage: proteinIntake}, () => console.log(` moderately: ${JSON.stringify(this.state)}`));
+                break;
+            case Activity.VERY:
+                proteinIntake = this.state.weightInPounds * Protein.COMPETITOR;
+                this.setState({proteinDosage: proteinIntake}, () => console.log(` very: ${JSON.stringify(this.state)}`));
+                break;
+            default:
+                console.log(`Sorry we are out of activity factors`);        
+        }
     }
 
     render(){
@@ -60,12 +78,16 @@ export default class Calculator extends Component {
                     weight={this.state.weight} 
                     onChange={this._onChange}
                     isPounds={this.state.isPounds}
-                    factors={this.state.factors}
-                    deficit={this.state.deficit}
-                    getChangeHandler={this.getChangeHandler('deficit')}
+                    activityFactors={this.state.activityFactors}
                 />
 
-                <MacroNutrients onChange={this._onChange} goal={this.state.goal} diet={this.state.diet} />
+                <MacroNutrients 
+                    onChange={this._onChange} 
+                    goal={this.state.goal} 
+                    diet={this.state.diet} 
+                    calculateMacros={this.calculateProteinIntake}
+                    weight={this.state.weight}
+                />
             </div>
         )
     }

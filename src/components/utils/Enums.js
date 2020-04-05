@@ -13,6 +13,12 @@ export const Pounds = {
     CONVERTER: 2.20462
 }
 
+export const Protein = {
+    SEDENTARY: 0.75,
+    ATHLETE: 1,
+    COMPETITOR: 1.25
+}
+
 export default Activity
 
 

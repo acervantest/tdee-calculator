@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Activity, Pounds, Weight, Protein } from '../utils/Enums';
-import MacroNutrients from '../macros/MacroNutrients';
+import { Activity, Pounds, Weight, Protein, Fat } from '../utils/Enums';
+import MacroNutrients, { DIET_PREFERENCES } from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
 
 export default class Calculator extends Component {
@@ -71,6 +71,17 @@ export default class Calculator extends Component {
         }
     }
 
+    calculateFatIntake = () => {
+        let fatIntake = 0;
+        if(this.state.diet === DIET_PREFERENCES[1]){
+            fatIntake = this.state.weightInPounds * Fat.CARBS;
+            this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
+        } else {
+            fatIntake = this.state.weightInPounds * Fat.HIGH_FATS;
+            this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
+        }
+    }
+
     render(){
         return(
             <div>
@@ -85,7 +96,7 @@ export default class Calculator extends Component {
                     onChange={this._onChange} 
                     goal={this.state.goal} 
                     diet={this.state.diet} 
-                    calculateMacros={this.calculateProteinIntake}
+                    calculateMacros={this.calculateFatIntake}
                     weight={this.state.weight}
                 />
             </div>

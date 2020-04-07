@@ -2,13 +2,13 @@ import React from 'react';
 import { Button, Intent, FormGroup } from "@blueprintjs/core";
 import Select from '../form_components/Select';
 
-const GOALS = [
+export const GOALS = [
     'Select Goal',
     'Lose Weight', 
     'Maintain Weight', 
     'Gain Weight' ]
 
-const DIET_PREFERENCES = [
+export const DIET_PREFERENCES = [
     'Select Favourite Diet',
     'High Fats',
     'High Carbs' ]    

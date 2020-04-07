@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Activity, Pounds, Weight, Protein, Fat } from '../utils/Enums';
-import MacroNutrients, { DIET_PREFERENCES } from '../macros/MacroNutrients';
+import { Activity, Pounds, Weight, Protein, Fat, CaloriesIn } from '../utils/Enums';
+import MacroNutrients, { DIET_PREFERENCES, GOALS } from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
 
 export default class Calculator extends Component {
@@ -24,12 +24,12 @@ export default class Calculator extends Component {
 
     _onChange = (e) => {
         const { name, value } = e.target;
-        this.setState({ [name]: value }, () => {
-            this.calculateCaloricMaintenance(); console.log(`_onChange : ${JSON.stringify(this.state)}`);
+        this.setState({ [name]: value }, async () => {
+            await this.calculateCaloricMaintenance(); console.log(`_onChange : ${JSON.stringify(this.state)}`);
         });
     }
     
-    calculateCaloricMaintenance = () => {
+    calculateCaloricMaintenance = async () => {
         let weightConverted = this.state.weight;//WEIGHT (will be returned in pounds) 
         let weightIsSet = this.state.weight !== '';
 
@@ -51,7 +51,7 @@ export default class Calculator extends Component {
         this.setState({ weightInPounds: weightConverted });
     }
 
-    calculateProteinIntake = () => { 
+    calculateProteinIntake = async () => { 
         let proteinIntake = 0;
         switch(this.state.activityFactors){
             case Activity.LIGHTLY:
@@ -71,7 +71,7 @@ export default class Calculator extends Component {
         }
     }
 
-    calculateFatIntake = () => {
+    calculateFatIntake = async () => {
         let fatIntake = 0;
         if(this.state.diet === DIET_PREFERENCES[1]){
             fatIntake = this.state.weightInPounds * Fat.CARBS;
@@ -80,6 +80,45 @@ export default class Calculator extends Component {
             fatIntake = this.state.weightInPounds * Fat.HIGH_FATS;
             this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
         }
+    }
+
+    calculateCarbsIntake = async (calories) => {
+        const proteinCalories = this.state.proteinDosage * CaloriesIn.PROTEIN;
+        const fatCalories = this.state.fatDosage * CaloriesIn.FAT;
+        const totalCalories = proteinCalories + fatCalories;
+
+        const availableCalories = calories - totalCalories;
+
+        const carbsIntake = availableCalories / CaloriesIn.CARBS;
+        
+        this.setState({carbsDosage: carbsIntake}, () => { 
+            console.log(`
+                calories: ${calories}
+                protein cals: ${proteinCalories}
+                fats cals: ${fatCalories}
+                total cals: ${totalCalories}
+                available cals:  ${availableCalories}
+            `)
+            console.log(`calculateCarbsIntake: ${JSON.stringify(this.state)}`)
+        })
+    }
+
+    calculateMacroNutrients = async () => {
+        await this.calculateProteinIntake();
+
+        await this.calculateFatIntake();
+        
+        let caloriesToCalculateCarbs = this.state.caloricMaintenance;
+        
+        if(this.state.goal === GOALS[1]){
+            caloriesToCalculateCarbs -= 500;
+        }
+
+        if(this.state.goal === GOALS[3]){
+            caloriesToCalculateCarbs += 500;
+        }
+
+        await this.calculateCarbsIntake(caloriesToCalculateCarbs);
     }
 
     render(){
@@ -96,7 +135,7 @@ export default class Calculator extends Component {
                     onChange={this._onChange} 
                     goal={this.state.goal} 
                     diet={this.state.diet} 
-                    calculateMacros={this.calculateFatIntake}
+                    calculateMacros={this.calculateMacroNutrients}
                     weight={this.state.weight}
                 />
             </div>

@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import { Activity, Pounds, Weight, Protein, Fat, CaloriesIn } from '../utils/Enums';
 import MacroNutrients, { DIET_PREFERENCES, GOALS } from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
+import CArd from '../displayComponents/Card';
+
+import { HTMLTable } from "@blueprintjs/core";
+
 
 export default class Calculator extends Component {
 
@@ -111,17 +115,18 @@ export default class Calculator extends Component {
         let caloriesToCalculateCarbs = this.state.caloricMaintenance;
         
         if(this.state.goal === GOALS[1]){
-            caloriesToCalculateCarbs -= 500;
+            caloriesToCalculateCarbs -= 300;
         }
 
         if(this.state.goal === GOALS[3]){
-            caloriesToCalculateCarbs += 500;
+            caloriesToCalculateCarbs += 300;
         }
 
         await this.calculateCarbsIntake(caloriesToCalculateCarbs);
     }
 
     render(){
+        const getKey = (obj,val) => Object.keys(obj).find(key => obj[key] === val);
         return(
             <div>
                 <BmrCalculator 
@@ -138,6 +143,39 @@ export default class Calculator extends Component {
                     calculateMacros={this.calculateMacroNutrients}
                     weight={this.state.weight}
                 />
+                <div className="cards">
+                    <CArd
+                        title={`Weight`}
+                        content={`${this.state.weight !== '' ? this.state.weight : 0 } ${this.state.isPounds === '1'  ? 'Pounds' : 'Kgs'}`}
+                    />    
+                    <CArd
+                        title={`Activity Factors`}
+                        content={getKey(Activity, this.state.activityFactors) }
+                    />
+                    <CArd
+                        title={`Goal`}
+                        content={this.state.goal}
+                    />
+                    <CArd
+                        title={`Diet`}
+                        content={this.state.diet}
+                    />
+                </div>
+
+                <HTMLTable interactive="true" striped="true">
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Dosage</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr><td>Caloric Maintenance</td><td>{this.state.caloricMaintenance}</td></tr>
+                        <tr><td>Protein</td><td>{this.state.proteinDosage}</td></tr>
+                        <tr><td>Fat</td><td>{this.state.fatDosage}</td></tr>
+                        <tr><td>Carbs</td><td>{this.state.carbsDosage}</td></tr>
+                    </tbody>
+                </HTMLTable>
             </div>
         )
     }

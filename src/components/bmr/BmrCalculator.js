@@ -11,9 +11,7 @@ import {
 
 const BmrCalculator = ({ weight, onChange, isPounds, activityFactors }) =>  (
         <div>
-            <p>
-                Basal Metabolic Rate ( BMR )
-            </p>
+            <p>Basal Metabolic Rate ( BMR )</p>
             <FormGroup
                 disabled={false}
                 helperText={ "weight"}

@@ -7,9 +7,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h4>TDEE Calculator</h4>
-        <Calculator/>
+        <h4>TDEE Calculator</h4> 
       </header>  
+      <Calculator/>
     </div>
   );
 }

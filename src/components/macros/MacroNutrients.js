@@ -1,17 +1,7 @@
 import React from 'react';
 import { Button, Intent, FormGroup } from "@blueprintjs/core";
 import Select from '../form_components/Select';
-
-export const GOALS = [
-    'Select Goal',
-    'Lose Weight', 
-    'Maintain Weight', 
-    'Gain Weight' ]
-
-export const DIET_PREFERENCES = [
-    'Select Favourite Diet',
-    'High Fats',
-    'High Carbs' ]    
+import { Goal, Diet } from '../utils/Enums';
 
  const MacroNutrients = ({ goal, diet, onChange, calculateMacros, weight }) => {
     return(
@@ -24,13 +14,13 @@ export const DIET_PREFERENCES = [
                     name={'goal'} 
                     value={goal} 
                     onChange={onChange}
-                    options={GOALS} />
+                    options={Object.keys(Goal)} />
 
                 <Select
                     name={'diet'} 
                     value={diet} 
                     onChange={onChange}
-                    options={DIET_PREFERENCES} />  
+                    options={Object.keys(Diet)} />  
 
                 <FormGroup>
                     <Button 
@@ -40,9 +30,9 @@ export const DIET_PREFERENCES = [
                         disabled={(
                             weight === '' || 
                             goal === '' || 
-                            goal === GOALS[0] || 
+                            goal === Object.keys(Goal)[0] || 
                             diet === '' || 
-                            diet === DIET_PREFERENCES[0])}
+                            diet === Object.keys(Diet)[0])}
                     />
                 </FormGroup>
             </div>

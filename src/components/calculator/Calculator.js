@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Activity, Pounds, Weight, Protein, Fat, CaloriesIn } from '../utils/Enums';
-import MacroNutrients, { DIET_PREFERENCES, GOALS } from '../macros/MacroNutrients';
+import { Activity, Pounds, Weight, Protein, CaloriesIn, Goal, Diet } from '../utils/Enums';
+import MacroNutrients from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
 import CArd from '../displayComponents/Card';
 
@@ -76,17 +76,12 @@ export default class Calculator extends Component {
     }
 
     calculateFatIntake = async () => {
-        let fatIntake = 0;
-        if(this.state.diet === DIET_PREFERENCES[1]){
-            fatIntake = this.state.weightInPounds * Fat.CARBS;
-            this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
-        } else {
-            fatIntake = this.state.weightInPounds * Fat.HIGH_FATS;
-            this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
-        }
+        let fatIntake = this.state.weightInPounds * Diet[this.state.diet]; 
+        this.setState( {fatDosage: fatIntake}, () => { console.log(`calculateFatIntake : ${JSON.stringify(this.state)}`) });
     }
 
-    calculateCarbsIntake = async (calories) => {
+    calculateCarbsIntake = async () => { 
+        let calories = this.state.caloricMaintenance + Goal[this.state.goal];
         const proteinCalories = this.state.proteinDosage * CaloriesIn.PROTEIN;
         const fatCalories = this.state.fatDosage * CaloriesIn.FAT;
         const totalCalories = proteinCalories + fatCalories;
@@ -109,20 +104,8 @@ export default class Calculator extends Component {
 
     calculateMacroNutrients = async () => {
         await this.calculateProteinIntake();
-
         await this.calculateFatIntake();
-        
-        let caloriesToCalculateCarbs = this.state.caloricMaintenance;
-        
-        if(this.state.goal === GOALS[1]){
-            caloriesToCalculateCarbs -= 300;
-        }
-
-        if(this.state.goal === GOALS[3]){
-            caloriesToCalculateCarbs += 300;
-        }
-
-        await this.calculateCarbsIntake(caloriesToCalculateCarbs);
+        await this.calculateCarbsIntake();
     }
 
     render(){

@@ -5,13 +5,13 @@ export const Activity = {
     VERY: '16'
 }
 
-export const Weight = {
-    KGS: '0',
-    POUNDS: '1'
+export const Unit = {
+    KGS: 'Kgs',
+    POUNDS: 'Lbs'
 }
 
 export const Pounds = {
-    CONVERTER: 2.20462
+    CONVERTION: 2.20462
 }
 
 export const Protein = {

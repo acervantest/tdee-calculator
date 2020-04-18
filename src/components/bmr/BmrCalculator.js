@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Weight } from '../utils/Enums';
+import { Activity, Unit } from '../utils/Enums';
 import { 
     Intent,
     FormGroup, 
@@ -9,7 +9,7 @@ import {
     Alignment
  } from "@blueprintjs/core";
 
-const BmrCalculator = ({ weight, onChange, isPounds, activityFactors }) =>  (
+const BmrCalculator = ({ weight, onChange, weightUnit, activityFactors }) =>  (
         <div>
             <p>Basal Metabolic Rate ( BMR )</p>
             <FormGroup
@@ -33,13 +33,13 @@ const BmrCalculator = ({ weight, onChange, isPounds, activityFactors }) =>  (
 
             <RadioGroup
                 inline={true}
-                label='Units'
-                name='isPounds' 
+                label='Weight Unit'
+                name='weightUnit' 
                 onChange={onChange}
-                selectedValue={isPounds}    
+                selectedValue={weightUnit}    
             >
-                <Radio label="Kgs" value={Weight.KGS} alignIndicator={Alignment.LEFT}/>
-                <Radio label="Lbs" value={Weight.POUNDS} alignIndicator={Alignment.LEFT} />
+                <Radio label={Unit.KGS} value={Unit.KGS} alignIndicator={Alignment.LEFT}/>
+                <Radio label={Unit.POUNDS} value={Unit.POUNDS} alignIndicator={Alignment.LEFT} />
             </RadioGroup>
                 
             <RadioGroup

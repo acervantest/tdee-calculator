@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Activity, Pounds, Weight, Protein, CaloriesIn, Goal, Diet } from '../utils/Enums';
+import { Activity, Pounds, Unit, Protein, CaloriesIn, Goal, Diet } from '../utils/Enums';
 import MacroNutrients from '../macros/MacroNutrients';
 import BmrCalculator from '../bmr/BmrCalculator';
 import CArd from '../displayComponents/Card';
@@ -14,7 +14,7 @@ export default class Calculator extends Component {
         
         this.state = { 
             weight: '',
-            isPounds: Weight.POUNDS,
+            weightUnit: Unit.POUNDS,
             weightInPounds: 0,
             activityFactors: Activity.LIGHTLY,
             goal: '',
@@ -35,22 +35,16 @@ export default class Calculator extends Component {
     
     calculateCaloricMaintenance = async () => {
         let weightConverted = this.state.weight;//WEIGHT (will be returned in pounds) 
-        let weightIsSet = this.state.weight !== '';
+        let weightIsSet = this.state.weight !== ''; 
 
-        if(this.state.isPounds === Weight.KGS && weightIsSet){//When WEIGHT provided in KGS  
-            weightConverted = (this.state.weight * Pounds.CONVERTER);
+        if(this.state.weightUnit === Unit.KGS && weightIsSet){//When unit WEIGHT KGS
+            weightConverted = (weightConverted * Pounds.CONVERTION);
+        }
 
-            this.setState({caloricMaintenance: (weightConverted * this.state.activityFactors)}, () => {
-                console.log(`caloricMaintenance(kgs): ${JSON.stringify(this.state)}`);
-            });
-            
-        } else if(this.state.isPounds === Weight.POUNDS && weightIsSet){ //When WEIGHT provided in LBS
-            weightConverted = this.state.weight;
+        this.setState({caloricMaintenance: (weightConverted * this.state.activityFactors)}, () => {
+            console.log(`caloricMaintenance(${this.state.weightUnit}): ${JSON.stringify(this.state)}`);
+        });
 
-            this.setState({caloricMaintenance: (this.state.weight * this.state.activityFactors)}, () =>{
-                console.log(`caloricMaintenance(lbs): ${JSON.stringify(this.state)}`);
-            });
-        }  
         //Set correct WEIGHT to Pounds 
         this.setState({ weightInPounds: weightConverted });
     }
@@ -115,7 +109,7 @@ export default class Calculator extends Component {
                 <BmrCalculator 
                     weight={this.state.weight} 
                     onChange={this._onChange}
-                    isPounds={this.state.isPounds}
+                    weightUnit={this.state.weightUnit}
                     activityFactors={this.state.activityFactors}
                 />
 
@@ -129,7 +123,7 @@ export default class Calculator extends Component {
                 <div className="cards">
                     <CArd
                         title={`Weight`}
-                        content={`${this.state.weight !== '' ? this.state.weight : 0 } ${this.state.isPounds === '1'  ? 'Pounds' : 'Kgs'}`}
+                        content={`${this.state.weight !== '' ? this.state.weight : 0 } ${this.state.weightUnit}`}
                     />    
                     <CArd
                         title={`Activity Factors`}
